@@ -1,6 +1,7 @@
 #include <print>
 #include <vector>
 #include <cmath>
+#include <algorithm>
 
 #include <SDL.h>
 
@@ -82,10 +83,38 @@ bool collideWithBody(Vec2 headPos, Vec2 BodyPos)
     return false;
 }
 
-void changeApplePosition(Vec2& applePos)
+void changeApplePosition(Vec2& applePos, Snake& snake)
 {
     int rand_x = rand() % 20;
     int rand_y = rand() % 15;
+
+    bool isCompleted = false;
+
+    std::vector<bool> same_position;
+
+    while (!isCompleted)
+    {
+        same_position.clear();
+        rand_x = rand() % 20;
+        rand_y = rand() % 15;
+        for (int i = 0; i < snake.m_parts.size(); i++)
+        {
+            if (rand_x == snake.m_parts.at(i).position.x && rand_y == snake.m_parts.at(i).position.y)
+            {
+                same_position.push_back(true);
+            }
+            else
+            {
+                same_position.push_back(false);
+            }
+        }
+        // if all bool in same_position vector was false means apple in not under snake itself
+        bool check = std::all_of(same_position.begin(), same_position.end(), [](bool v) {return !v;});
+        if (check)
+        {
+            isCompleted = true;
+        }
+    }
     applePos.x = rand_x;
     applePos.y = rand_y;
 }
@@ -251,7 +280,7 @@ int main(int argc, char* argv[])
             if (collideWithBody(snake.m_parts.at(0).position, apple.position))
             {
                 snake.addBody();
-                changeApplePosition(apple.position);
+                changeApplePosition(apple.position, snake);
                 std::println("You Eat an apple!");
             }
 
