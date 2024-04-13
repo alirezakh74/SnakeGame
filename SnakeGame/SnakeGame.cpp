@@ -155,6 +155,9 @@ int main(int argc, char* argv[])
             {
                 switch (e.key.keysym.sym)
                 {
+                case SDLK_ESCAPE:
+                    running = false;
+                    break;
                 case SDLK_UP:
                     if (snake.m_parts.at(0).movement_direction.y != 1)
                     {
